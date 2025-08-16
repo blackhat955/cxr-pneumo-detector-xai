@@ -1,0 +1,39 @@
+Upload Chest X-ray Image,Prediction Results,AI Explanation (Grad-CAM),timestamp
+.gradio/flagged/Upload Chest X-ray Image/1c70841159407dd8cd05/2.jpg,"# AI Prediction Results
+
+## Classification
+**Prediction:** Pneumonia  
+**Confidence:** 99.9%
+
+## Probability Breakdown
+- **Normal:** 0.1%
+- **Pneumonia:** 99.9%
+
+## Model Performance
+- **Sensitivity (Recall):** Optimized for detecting pneumonia cases
+- **Specificity:** Balanced to minimize false positives
+
+## Important Notes
+- This is a **demonstration tool** for educational purposes
+- **NOT for clinical diagnosis** or treatment decisions
+- Always consult healthcare professionals for medical advice
+            ",,2025-08-16 01:52:59.637734
+.gradio/flagged/Upload Chest X-ray Image/f7dba7908bb1fed17c42/2.jpg,"# AI Prediction Results
+
+## Classification
+**Prediction:** Pneumonia  
+**Confidence:** 99.9%
+
+## Probability Breakdown
+- **Normal:** 0.1%
+- **Pneumonia:** 99.9%
+
+## Model Performance
+- **Sensitivity (Recall):** Optimized for detecting pneumonia cases
+- **Specificity:** Balanced to minimize false positives
+
+## Important Notes
+- This is a **demonstration tool** for educational purposes
+- **NOT for clinical diagnosis** or treatment decisions
+- Always consult healthcare professionals for medical advice
+            ",.gradio/flagged/AI Explanation Grad-CAM/e37e18922bbcae3e7fb6/image.webp,2025-08-16 01:59:57.327018

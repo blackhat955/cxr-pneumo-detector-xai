@@ -138,20 +138,51 @@ class ChestXrayPyTorchApp:
             explanation_img = None
             if self.gradcam_visualizer:
                 try:
-                    gradcam_result = self.gradcam_visualizer.visualize_gradcam(
-                        processed_image, self.model, target_layer='conv2'
-                    )
+                    # Generate Grad-CAM visualization
+                    gradcam = GradCAM(self.model, 'conv2')
                     
-                    if 'visualization' in gradcam_result:
-                        # Convert matplotlib figure to PIL Image
-                        buf = io.BytesIO()
-                        gradcam_result['visualization'].savefig(buf, format='png', dpi=150, bbox_inches='tight')
-                        buf.seek(0)
-                        explanation_img = Image.open(buf)
-                        plt.close(gradcam_result['visualization'])
+                    # Apply transforms and make prediction for Grad-CAM
+                    tensor_image = self.model_manager.val_transform(pil_image_rgb).unsqueeze(0)
+                    tensor_image = tensor_image.to(self.model_manager.device)
+                    
+                    # Generate CAM for the predicted class
+                    cam = gradcam.generate_cam(tensor_image, predicted_class)
+                    
+                    # Create heatmap overlay
+                    plt.figure(figsize=(12, 4))
+                    
+                    # Original image
+                    plt.subplot(1, 3, 1)
+                    plt.imshow(processed_image, cmap='gray')
+                    plt.title('Original X-ray')
+                    plt.axis('off')
+                    
+                    # Heatmap
+                    plt.subplot(1, 3, 2)
+                    plt.imshow(cam, cmap='jet')
+                    plt.title('Grad-CAM Heatmap')
+                    plt.axis('off')
+                    
+                    # Overlay
+                    plt.subplot(1, 3, 3)
+                    plt.imshow(processed_image, cmap='gray')
+                    plt.imshow(cam, cmap='jet', alpha=0.5)
+                    plt.title(f'Overlay - {predicted_label}')
+                    plt.axis('off')
+                    
+                    plt.tight_layout()
+                    
+                    # Convert to PIL Image
+                    buf = io.BytesIO()
+                    plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+                    buf.seek(0)
+                    explanation_img = Image.open(buf)
+                    plt.close()
                     
                 except Exception as e:
                     print(f"Warning: Could not generate Grad-CAM: {e}")
+                    import traceback
+                    traceback.print_exc()
             
             return result_text, explanation_img
             
@@ -189,41 +220,8 @@ Please try:
                 gr.Markdown(label="Prediction Results"),
                 gr.Image(label="AI Explanation (Grad-CAM)")
             ],
-            title="Chest X-ray Pneumonia Detection with AI Explainability (PyTorch)",
-            description="""
-            Upload a chest X-ray image to get an AI prediction for pneumonia detection.
-            The system will show both the prediction and a visual explanation of what the AI model focused on.
-            
-            **MEDICAL DISCLAIMER:**
-            This is a demonstration tool for educational purposes only. 
-            It should NOT be used for actual medical diagnosis or treatment decisions.
-            Always consult qualified healthcare professionals for medical advice.
-            """,
-            article="""
-            ### How it works:
-            1. **Deep Learning Model**: Uses a PyTorch CNN trained on chest X-ray images
-            2. **Binary Classification**: Distinguishes between Normal and Pneumonia cases
-            3. **Grad-CAM Visualization**: Shows which parts of the image influenced the AI's decision
-            4. **Confidence Scores**: Provides probability estimates for each class
-            
-            ### Technical Details:
-            - **Framework**: PyTorch with custom CNN architecture
-            - **Input**: Grayscale chest X-ray images (any size, auto-resized)
-            - **Output**: Binary classification with confidence scores
-            - **Explainability**: Gradient-weighted Class Activation Mapping (Grad-CAM)
-            - **Training Data**: Medical imaging dataset
-            
-            ### Limitations:
-            - Trained on limited dataset size
-            - May not generalize to all X-ray equipment or patient populations
-            - Cannot replace professional medical evaluation
-            - Should not be used for clinical decision-making
-            
-            ### Educational Purpose:
-            This tool demonstrates the application of AI in medical imaging and the importance
-            of explainable AI in healthcare. It shows how deep learning models can assist in
-            medical image analysis while emphasizing the critical need for human expertise.
-            """,
+            title="Chest X-ray Pneumonia Detection with AI and Grad-CAM app",
+            description="Upload a chest X-ray image to get an AI prediction for pneumonia detection. The system will show both the prediction and a visual explanation of what the AI model focused on.",
             examples=[
                 # You can add example images here if available
             ],
