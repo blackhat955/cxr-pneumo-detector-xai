@@ -1,4 +1,4 @@
-# Chest X-ray Pneumonia Detection with AI Explainability
+# Chest X-ray Pneumonia Detection with AI and Grad-CAM app
 
 A comprehensive deep learning project for chest X-ray pneumonia classification using Keras/TensorFlow with Grad-CAM explainability. This project demonstrates the complete machine learning pipeline from data preprocessing to deployment with interactive web applications.
 
