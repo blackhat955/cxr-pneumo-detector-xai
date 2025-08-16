@@ -46,7 +46,7 @@ def create_hf_space():
         ("src/model_pytorch.py", "model_pytorch.py"), 
         ("src/gradcam_pytorch.py", "gradcam_pytorch.py"),
         ("experiments/quick_test_model.pth", "quick_test_model.pth"),
-        ("requirements_pytorch.txt", "requirements.txt")
+        ("requirements_hf.txt", "requirements.txt")
     ]
     
     # Create app.py for Hugging Face Spaces
@@ -55,16 +55,29 @@ def create_hf_space():
 Hugging Face Spaces deployment for Chest X-ray Pneumonia Detection
 """
 
-import sys
 import os
+import gradio as gr
+from app_pytorch import ChestXrayPyTorchApp
 
-from app_pytorch import create_gradio_app
-
-if __name__ == "__main__":
+def main():
     # Use the model from the uploaded file
     model_path = "quick_test_model.pth"
-    app = create_gradio_app(model_path, share=False, server_port=7860)
-    app.launch()
+    
+    # Create app instance
+    app = ChestXrayPyTorchApp(model_path)
+    interface = app.create_gradio_interface()
+    
+    # Launch with proper Hugging Face Spaces configuration
+    interface.launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        share=False,
+        show_error=True,
+        quiet=False
+    )
+
+if __name__ == "__main__":
+    main()
 '''
     
     with open("app.py", "w") as f:

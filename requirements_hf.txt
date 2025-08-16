@@ -1,0 +1,20 @@
+# Lightweight requirements for Hugging Face Spaces
+# Optimized for faster startup and reduced memory usage
+
+# Core ML libraries (minimal versions)
+torch>=2.1.0
+torchvision>=0.16.0
+
+# Data handling (essential only)
+numpy>=1.24.0
+Pillow>=10.0.0
+
+# Visualization (minimal)
+matplotlib>=3.7.0
+
+# Web interface
+gradio>=4.0.0
+
+# Utilities (essential only)
+scikit-learn>=1.3.0
+opencv-python-headless>=4.8.0
