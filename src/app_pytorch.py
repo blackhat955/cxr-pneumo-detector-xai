@@ -145,32 +145,239 @@ class ChestXrayPyTorchApp:
                     tensor_image = self.model_manager.val_transform(pil_image_rgb).unsqueeze(0)
                     tensor_image = tensor_image.to(self.model_manager.device)
                     
-                    # Generate CAM for the predicted class
-                    cam = gradcam.generate_cam(tensor_image, predicted_class)
+                    # Generate CAM for both classes
+                    cam_normal_raw = gradcam.generate_cam(tensor_image, 0)  # Normal class
+                    cam_pneumonia_raw = gradcam.generate_cam(tensor_image, 1)  # Pneumonia class
                     
-                    # Create heatmap overlay
-                    plt.figure(figsize=(12, 4))
+                    # Resize heatmaps to match processed image dimensions
+                    target_size = processed_image.shape
+                    cam_normal = cv2.resize(cam_normal_raw, (target_size[1], target_size[0]))
+                    cam_pneumonia = cv2.resize(cam_pneumonia_raw, (target_size[1], target_size[0]))
                     
-                    # Original image
-                    plt.subplot(1, 3, 1)
+                    # Create comprehensive medical imaging visualization
+                    fig = plt.figure(figsize=(20, 16))
+                    
+                    # Row 1: Original analysis
+                    plt.subplot(4, 5, 1)
                     plt.imshow(processed_image, cmap='gray')
-                    plt.title('Original X-ray')
+                    plt.title('Original X-ray', fontsize=11, fontweight='bold')
                     plt.axis('off')
                     
-                    # Heatmap
-                    plt.subplot(1, 3, 2)
-                    plt.imshow(cam, cmap='jet')
-                    plt.title('Grad-CAM Heatmap')
+                    # Enhanced probability visualization with confidence intervals
+                    plt.subplot(4, 5, 2)
+                    classes = ['Normal', 'Pneumonia']
+                    probs = [normal_prob, pneumonia_prob]
+                    colors = ['lightblue', 'red']
+                    bars = plt.bar(classes, probs, color=colors, alpha=0.8)
+                    plt.title(f'Prediction: {predicted_label}\nConfidence: {confidence:.1%}', fontsize=11, fontweight='bold')
+                    plt.ylabel('Probability')
+                    plt.ylim(0, 1)
+                    for bar, prob in zip(bars, probs):
+                        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+                                f'{prob:.3f}', ha='center', va='bottom', fontweight='bold')
+                    # Add uncertainty indicator
+                    uncertainty = 1 - max(probs)
+                    plt.text(0.5, 0.9, f'Uncertainty: {uncertainty:.3f}', ha='center', 
+                            transform=plt.gca().transAxes, fontsize=9, 
+                            bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.5))
+                    
+                    # Feature importance histogram
+                    plt.subplot(4, 5, 3)
+                    feature_importance = np.array([cam_normal.mean(), cam_pneumonia.mean(), 
+                                                 cam_normal.max(), cam_pneumonia.max(),
+                                                 cam_normal.std(), cam_pneumonia.std()])
+                    feature_labels = ['Normal\nMean', 'Pneumonia\nMean', 'Normal\nMax', 
+                                    'Pneumonia\nMax', 'Normal\nStd', 'Pneumonia\nStd']
+                    colors_feat = ['lightblue', 'red', 'blue', 'darkred', 'cyan', 'orange']
+                    plt.bar(range(len(feature_importance)), feature_importance, color=colors_feat, alpha=0.7)
+                    plt.title('Feature Activation\nStatistics', fontsize=11, fontweight='bold')
+                    plt.xticks(range(len(feature_labels)), feature_labels, rotation=45, fontsize=8)
+                    plt.ylabel('Activation')
+                    
+                    # Attention intensity distribution
+                    plt.subplot(4, 5, 4)
+                    plt.hist(cam_normal.flatten(), bins=20, alpha=0.6, label='Normal', color='blue', density=True)
+                    plt.hist(cam_pneumonia.flatten(), bins=20, alpha=0.6, label='Pneumonia', color='red', density=True)
+                    plt.title('Attention Intensity\nDistribution', fontsize=11, fontweight='bold')
+                    plt.xlabel('Activation Value')
+                    plt.ylabel('Density')
+                    plt.legend(fontsize=8)
+                    
+                    # Model interpretation guide
+                    plt.subplot(4, 5, 5)
+                    plt.text(0.05, 0.9, 'AI Interpretation Guide:', fontsize=11, fontweight='bold')
+                    plt.text(0.05, 0.8, '🔴 Red: High attention areas', fontsize=9)
+                    plt.text(0.05, 0.7, '🔵 Blue: Low attention areas', fontsize=9)
+                    plt.text(0.05, 0.6, '📊 Statistics show activation patterns', fontsize=9)
+                    plt.text(0.05, 0.5, '📈 Distribution shows focus spread', fontsize=9)
+                    plt.text(0.05, 0.4, '🎯 Anatomical regions highlighted', fontsize=9)
+                    plt.text(0.05, 0.3, '⚡ Uncertainty indicates model doubt', fontsize=9)
+                    plt.text(0.05, 0.15, f'🔬 Model Confidence: {confidence:.1%}', fontsize=10, fontweight='bold',
+                            bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.7))
+                    plt.xlim(0, 1)
+                    plt.ylim(0, 1)
                     plt.axis('off')
                     
-                    # Overlay
-                    plt.subplot(1, 3, 3)
-                    plt.imshow(processed_image, cmap='gray')
-                    plt.imshow(cam, cmap='jet', alpha=0.5)
-                    plt.title(f'Overlay - {predicted_label}')
+                    # Row 2: Class-specific Grad-CAMs and analysis
+                    plt.subplot(4, 5, 6)
+                    plt.imshow(cam_normal, cmap='RdYlBu_r')
+                    plt.title('Normal Grad-CAM', fontsize=11, fontweight='bold')
                     plt.axis('off')
                     
-                    plt.tight_layout()
+                    plt.subplot(4, 5, 7)
+                    plt.imshow(cam_pneumonia, cmap='RdYlBu_r')
+                    plt.title('Pneumonia Grad-CAM\n(Predicted)', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    # Anatomical region analysis
+                    plt.subplot(4, 5, 8)
+                    # Divide image into anatomical regions (upper, middle, lower lung)
+                    h, w = cam_pneumonia.shape
+                    upper_region = cam_pneumonia[:h//3, :].mean()
+                    middle_region = cam_pneumonia[h//3:2*h//3, :].mean()
+                    lower_region = cam_pneumonia[2*h//3:, :].mean()
+                    
+                    regions = ['Upper\nLung', 'Middle\nLung', 'Lower\nLung']
+                    region_values = [upper_region, middle_region, lower_region]
+                    region_colors = ['lightcoral', 'orange', 'lightblue']
+                    
+                    bars = plt.bar(regions, region_values, color=region_colors, alpha=0.8)
+                    plt.title('Anatomical Region\nActivation', fontsize=11, fontweight='bold')
+                    plt.ylabel('Mean Activation')
+                    for bar, val in zip(bars, region_values):
+                        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+                                f'{val:.3f}', ha='center', va='bottom', fontsize=8)
+                    
+                    # Saliency intensity map
+                    plt.subplot(4, 5, 9)
+                    saliency_map = np.abs(cam_pneumonia - cam_normal)
+                    plt.imshow(saliency_map, cmap='hot')
+                    plt.title('Differential\nSaliency Map', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    # Comparison view with enhanced visualization
+                    plt.subplot(4, 5, 10)
+                    comparison = np.zeros((cam_normal.shape[0], cam_normal.shape[1], 3))
+                    comparison[:, :, 0] = cam_pneumonia  # Red channel for pneumonia
+                    comparison[:, :, 2] = cam_normal     # Blue channel for normal
+                    plt.imshow(comparison)
+                    plt.title('Class Comparison\n(Red: Pneumonia, Blue: Normal)', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    # Row 3: Advanced overlays and analysis
+                    plt.subplot(4, 5, 11)
+                    overlay_normal = 0.6 * processed_image + 0.4 * cam_normal
+                    plt.imshow(overlay_normal, cmap='gray')
+                    plt.title('Normal Focus\nOverlay', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    plt.subplot(4, 5, 12)
+                    overlay_pneumonia = 0.6 * processed_image + 0.4 * cam_pneumonia
+                    plt.imshow(overlay_pneumonia, cmap='gray')
+                    plt.title('Pneumonia Focus\nOverlay', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    # Attention heatmap with contours
+                    plt.subplot(4, 5, 13)
+                    plt.imshow(processed_image, cmap='gray', alpha=0.7)
+                    contours = plt.contour(cam_pneumonia, levels=5, colors='red', alpha=0.8, linewidths=1.5)
+                    plt.contour(cam_normal, levels=5, colors='blue', alpha=0.8, linewidths=1.5)
+                    plt.title('Attention Contours\n(Red: Pneumonia, Blue: Normal)', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    # Gradient magnitude visualization
+                    plt.subplot(4, 5, 14)
+                    grad_x = np.gradient(cam_pneumonia, axis=1)
+                    grad_y = np.gradient(cam_pneumonia, axis=0)
+                    gradient_magnitude = np.sqrt(grad_x**2 + grad_y**2)
+                    plt.imshow(gradient_magnitude, cmap='viridis')
+                    plt.title('Attention Gradient\nMagnitude', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    # Enhanced comparison overlay with transparency
+                    plt.subplot(4, 5, 15)
+                    enhanced_overlay = processed_image.copy()
+                    enhanced_overlay = np.stack([enhanced_overlay] * 3, axis=-1)
+                    enhanced_overlay[:, :, 0] += 0.3 * cam_pneumonia  # Add red for pneumonia
+                    enhanced_overlay[:, :, 2] += 0.3 * cam_normal     # Add blue for normal
+                    enhanced_overlay = np.clip(enhanced_overlay, 0, 1)
+                    plt.imshow(enhanced_overlay)
+                    plt.title('Enhanced Multi-Class\nOverlay', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    # Row 4: Statistical analysis and summary
+                    plt.subplot(4, 5, 16)
+                    # Activation correlation analysis
+                    correlation = np.corrcoef(cam_normal.flatten(), cam_pneumonia.flatten())[0, 1]
+                    plt.scatter(cam_normal.flatten()[::100], cam_pneumonia.flatten()[::100], 
+                               alpha=0.5, s=1, c='purple')
+                    plt.xlabel('Normal Activation')
+                    plt.ylabel('Pneumonia Activation')
+                    plt.title(f'Activation Correlation\nr = {correlation:.3f}', fontsize=11, fontweight='bold')
+                    plt.grid(True, alpha=0.3)
+                    
+                    # Attention focus metrics
+                    plt.subplot(4, 5, 17)
+                    focus_metrics = {
+                        'Normal\nFocus': cam_normal.max() - cam_normal.min(),
+                        'Pneumonia\nFocus': cam_pneumonia.max() - cam_pneumonia.min(),
+                        'Normal\nSpread': cam_normal.std(),
+                        'Pneumonia\nSpread': cam_pneumonia.std()
+                    }
+                    
+                    metric_names = list(focus_metrics.keys())
+                    metric_values = list(focus_metrics.values())
+                    metric_colors = ['lightblue', 'red', 'blue', 'darkred']
+                    
+                    plt.bar(range(len(metric_names)), metric_values, color=metric_colors, alpha=0.7)
+                    plt.title('Attention Focus\nMetrics', fontsize=11, fontweight='bold')
+                    plt.xticks(range(len(metric_names)), metric_names, rotation=45, fontsize=8)
+                    plt.ylabel('Value')
+                    
+                    # Model decision boundary visualization
+                    plt.subplot(4, 5, 18)
+                    decision_map = cam_pneumonia - cam_normal
+                    plt.imshow(decision_map, cmap='RdBu_r', vmin=-1, vmax=1)
+                    plt.title('Decision Boundary\n(Red: Pro-Pneumonia)', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    # Uncertainty heatmap
+                    plt.subplot(4, 5, 19)
+                    uncertainty_map = 1 - np.abs(decision_map)
+                    plt.imshow(uncertainty_map, cmap='YlOrRd')
+                    plt.title('Uncertainty Map\n(Bright: High Uncertainty)', fontsize=11, fontweight='bold')
+                    plt.axis('off')
+                    
+                    # Summary statistics panel
+                    plt.subplot(4, 5, 20)
+                    summary_text = f"""DIAGNOSTIC SUMMARY
+                    
+🔍 Prediction: {predicted_label}
+📊 Confidence: {confidence:.1%}
+⚠️  Uncertainty: {uncertainty:.3f}
+
+📈 ATTENTION ANALYSIS:
+• Normal Focus: {cam_normal.max():.3f}
+• Pneumonia Focus: {cam_pneumonia.max():.3f}
+• Correlation: {correlation:.3f}
+
+🫁 ANATOMICAL REGIONS:
+• Upper Lung: {upper_region:.3f}
+• Middle Lung: {middle_region:.3f}
+• Lower Lung: {lower_region:.3f}
+
+🎯 KEY FINDINGS:
+• Max Attention: {max(cam_pneumonia.max(), cam_normal.max()):.3f}
+• Decision Strength: {np.abs(decision_map).max():.3f}"""
+                    
+                    plt.text(0.05, 0.95, summary_text, fontsize=8, fontfamily='monospace',
+                            verticalalignment='top', transform=plt.gca().transAxes,
+                            bbox=dict(boxstyle='round,pad=0.5', facecolor='lightgray', alpha=0.8))
+                    plt.xlim(0, 1)
+                    plt.ylim(0, 1)
+                    plt.axis('off')
+                    
+                    plt.tight_layout(pad=2.0)
                     
                     # Convert to PIL Image
                     buf = io.BytesIO()
