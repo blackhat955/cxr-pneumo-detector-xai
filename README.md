@@ -5,41 +5,25 @@ This project implements a state-of-the-art chest X-ray pneumonia detection syste
 
 ## Application Screenshots
 
-### Interactive Demo Interface
-![Application Interface - Basic View](experiments/quick_test_gradcam/Screenshot%202025-08-16%20at%2001.00.16.png)
-*Basic application interface showing the clean, medical-grade design optimized for healthcare professionals*
-
 ### Advanced Analysis Dashboard
 ![Application Interface - Advanced Analysis](experiments/quick_test_gradcam/Screenshot%202025-08-16%20at%2001.35.49.png)
 *Advanced analysis view with detailed metrics and comprehensive visualization panels*
-
-### Medical Imaging Analysis Interface
-![Application Interface - Medical Analysis](experiments/quick_test_gradcam/Screenshot%202025-08-16%20at%2002.43.48.png)
-*Complete medical imaging analysis interface with real-time detection and explanation features*
-
-### Enhanced 20-Panel Dashboard
-![Enhanced Interface Screenshot](experiments/quick_test_gradcam/enhanced_interface_screenshot.png)
-*Comprehensive 20-panel AI explainability dashboard showing detailed analysis, statistical metrics, and uncertainty visualization*
 
 ## Grad-CAM Analysis Examples
 
 Our Grad-CAM implementation provides detailed visual explanations of AI decision-making:
 
 ### Analysis Case 1: Normal Chest X-ray
-![Grad-CAM Analysis 1](experiments/quick_test_gradcam/gradcam_analysis_1.png)
+![Grad-CAM Analysis 1](experiments/quick_test_gradcam/gradcam_analysis_2.png)
 *Grad-CAM heatmap showing AI attention patterns on a normal chest X-ray - notice the distributed attention across lung fields*
 
 ### Analysis Case 2: Pneumonia Detection
-![Grad-CAM Analysis 2](experiments/quick_test_gradcam/gradcam_analysis_2.png)
+![Grad-CAM Analysis 2](experiments/quick_test_gradcam/gradcam_analysis_1.png)
 *Grad-CAM visualization highlighting areas of concern in pneumonia detection - focused attention on affected regions*
 
 ### Analysis Case 3: Detailed Feature Analysis
-![Grad-CAM Analysis 3](experiments/quick_test_gradcam/gradcam_analysis_3.png)
+![Grad-CAM Analysis 3](experiments/quick_test_gradcam/Screenshot%202025-08-16%20at%2002.43.48.png)
 *Advanced Grad-CAM analysis showing fine-grained feature detection and anatomical region focus*
-
-### Analysis Case 4: Comparative Analysis
-![Grad-CAM Analysis 4](experiments/quick_test_gradcam/gradcam_analysis_4.png)
-*Comparative Grad-CAM analysis demonstrating the model's ability to distinguish between different pathological patterns*
 
 ## Technical Implementation
 
@@ -65,7 +49,7 @@ Our Grad-CAM implementation provides detailed visual explanations of AI decision
 - **Educational Tool**: Training healthcare professionals with AI insights
 - **Quality Assurance**: Secondary opinion system for radiological analysis
 
-## 🔬 AI Explainability Features
+## AI Explainability Features
 
 ### 20-Panel Dashboard Includes:
 1. **Original Image Analysis**
