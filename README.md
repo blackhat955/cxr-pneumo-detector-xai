@@ -1,8 +1,8 @@
-# 🫁 Chest X-ray Pneumonia Detection with AI Explainability
+# Chest X-ray Pneumonia Detection with AI Explainability
 
 A comprehensive deep learning project for chest X-ray pneumonia classification using Keras/TensorFlow with Grad-CAM explainability. This project demonstrates the complete machine learning pipeline from data preprocessing to deployment with interactive web applications.
 
-## 🎯 Project Overview
+## Project Overview
 
 This project implements a binary classification system to detect pneumonia in chest X-ray images using:
 - **Deep Learning**: Transfer learning with pre-trained CNNs (ResNet50, MobileNetV2)
@@ -10,68 +10,16 @@ This project implements a binary classification system to detect pneumonia in ch
 - **Clinical Focus**: Optimized for sensitivity/recall (important for medical screening)
 - **Interactive Demo**: Gradio/Streamlit web applications for easy testing
 
-## 📊 Key Features
+## Key Features
 
-- ✅ **Multiple Model Architectures**: MobileNetV2, ResNet50, EfficientNet
-- ✅ **Transfer Learning**: Pre-trained ImageNet weights with fine-tuning
-- ✅ **Class Imbalance Handling**: Weighted loss functions and stratified sampling
-- ✅ **Comprehensive Evaluation**: AUC, sensitivity, specificity, calibration
-- ✅ **Explainable AI**: Grad-CAM heatmaps for visual explanations
-- ✅ **Interactive Apps**: Gradio and Streamlit interfaces
-- ✅ **Production Ready**: Model saving, calibration, and deployment scripts
+- **Multiple Model Architectures**: MobileNetV2, ResNet50, EfficientNet
+- **Transfer Learning**: Pre-trained ImageNet weights with fine-tuning
+- **Class Imbalance Handling**: Weighted loss functions and stratified sampling
+- **Comprehensive Evaluation**: AUC, sensitivity, specificity, calibration
+- **Explainable AI**: Grad-CAM heatmaps for visual explanations
+- **Interactive Apps**: Gradio and Streamlit interfaces
+- **Production Ready**: Model saving, calibration, and deployment scripts
 
-## 🏗️ Project Structure
-
-```
-pneumo-gradcam/
-├── data/
-│   ├── raw/            # Downloaded PneumoniaMNIST dataset
-│   └── processed/      # Preprocessed and split data
-├── src/
-│   ├── prepare_data.py # Data preprocessing and splitting
-│   ├── model.py        # Model architectures and utilities
-│   ├── train.py        # Training pipeline with transfer learning
-│   ├── gradcam.py      # Grad-CAM implementation for explainability
-│   ├── evaluate.py     # Comprehensive model evaluation
-│   └── app.py          # Gradio/Streamlit demo applications
-├── notebooks/
-│   └── EDA.ipynb       # Exploratory data analysis
-├── experiments/        # Training results and model checkpoints
-├── requirements.txt    # Python dependencies
-└── README.md          # This file
-```
-
-## 🚀 Quick Start
-
-### 1. Environment Setup
-
-```bash
-# Clone or navigate to the project directory
-cd /path/to/pneumo-gradcam
-
-# Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Data Preparation
-
-```bash
-# Download and preprocess PneumoniaMNIST dataset
-cd src
-python prepare_data.py
-```
-
-This will:
-- Download the PneumoniaMNIST dataset (~5MB)
-- Resize images from 28×28 to 224×224
-- Create stratified train/validation/test splits (70/15/15)
-- Convert grayscale to 3-channel RGB
-- Normalize pixel values and compute class weights
-- Save processed data to `data/processed/`
 
 ### 3. Model Training
 
@@ -97,19 +45,7 @@ python train.py --model_type efficientnet_b0 --epochs_frozen 8 --epochs_finetune
 python evaluate.py --model_path experiments/resnet_20231201_123456/resnet_20231201_123456_final.h5
 ```
 
-### 5. Interactive Demo
-
-#### Gradio App (Recommended)
-```bash
-python app.py --model_path experiments/your_model.h5 --app_type gradio --port 7860
-```
-
-#### Streamlit App
-```bash
-streamlit run app.py -- --model_path experiments/your_model.h5
-```
-
-## 📈 Training Pipeline
+## Training Pipeline
 
 ### Phase 1: Frozen Backbone Training
 - Freeze pre-trained backbone (ResNet50/MobileNetV2)
@@ -130,7 +66,7 @@ streamlit run app.py -- --model_path experiments/your_model.h5
 - Horizontal flip: Yes
 - Vertical flip: No (anatomically incorrect)
 
-## 🔍 Model Evaluation
+## Model Evaluation
 
 ### Primary Metrics
 - **AUC-ROC**: Area under ROC curve (handles class imbalance)
@@ -144,7 +80,7 @@ streamlit run app.py -- --model_path experiments/your_model.h5
 - **Confusion Matrix**: Detailed error analysis
 - **Grad-CAM Visualization**: Visual explanations of predictions
 
-## 🧠 Explainable AI with Grad-CAM
+## Explainable AI with Grad-CAM
 
 ### What is Grad-CAM?
 Gradient-weighted Class Activation Mapping (Grad-CAM) generates visual explanations by:
@@ -175,9 +111,12 @@ The following images demonstrate the model's attention patterns when making pred
 ![Grad-CAM Analysis 4](experiments/quick_test_gradcam/gradcam_analysis_4.png)
 *Example 4: Pneumonia case - Model identifies suspicious regions in chest X-ray*
 
+![Interactive Demo Screenshot](experiments/quick_test_gradcam/Screenshot%202025-08-16%20at%2001.35.49.png)
+*Interactive Gradio Application - Real-time pneumonia detection with Grad-CAM explanations*
+
 These visualizations help clinicians understand which regions of the chest X-ray the AI model considers most important for its pneumonia detection decision.
 
-## 📱 Interactive Applications
+## Interactive Applications
 
 ### Gradio Interface
 - **Upload**: Drag-and-drop chest X-ray images
@@ -192,19 +131,19 @@ These visualizations help clinicians understand which regions of the chest X-ray
 - **Advanced**: Threshold analysis and metrics
 - **Educational**: Technology explanations
 
-## ⚠️ Medical Disclaimer
+## Medical Disclaimer
 
 **IMPORTANT**: This is a demonstration tool for educational and research purposes only.
 
-- ❌ **NOT for clinical diagnosis** or treatment decisions
-- ❌ **NOT a replacement** for professional medical evaluation
-- ❌ **NOT validated** for clinical use
-- ✅ **Educational tool** for understanding AI in healthcare
-- ✅ **Research prototype** for algorithm development
+- **NOT for clinical diagnosis** or treatment decisions
+- **NOT a replacement** for professional medical evaluation
+- **NOT validated** for clinical use
+- **Educational tool** for understanding AI in healthcare
+- **Research prototype** for algorithm development
 
 **Always consult qualified healthcare professionals for medical advice.**
 
-## 🔧 Technical Details
+## Technical Details
 
 ### Model Architecture
 ```
@@ -235,7 +174,7 @@ Output (Pneumonia Probability)
 - **Classes**: Normal (0), Pneumonia (1)
 - **Split**: 70% train, 15% validation, 15% test
 
-## 📊 Expected Results
+## Expected Results
 
 ### Baseline Performance (MobileNetV2)
 - **AUC**: ~0.85-0.90
@@ -251,7 +190,7 @@ Output (Pneumonia Probability)
 
 *Note: Results may vary based on random initialization and data splits.*
 
-## 🛠️ Customization
+## Customization
 
 ### Adding New Models
 1. Implement model in `src/model.py`
@@ -269,7 +208,7 @@ Output (Pneumonia Probability)
 - **Edge**: Optimize for mobile/embedded devices
 - **API**: Create REST API endpoints
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -300,14 +239,14 @@ export TF_ENABLE_AUTO_MIXED_PRECISION=1
 - **Speed**: Use mixed precision training
 - **Storage**: Use TFRecords for large datasets
 
-## 📚 References
+## References
 
 1. **Grad-CAM**: Selvaraju et al. "Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization" (2017)
 2. **MedMNIST**: Yang et al. "MedMNIST v2: A Large-Scale Lightweight Benchmark for 2D and 3D Biomedical Image Classification" (2023)
 3. **Transfer Learning**: Yosinski et al. "How transferable are features in deep neural networks?" (2014)
 4. **Medical AI**: Rajpurkar et al. "CheXNet: Radiologist-Level Pneumonia Detection on Chest X-Rays with Deep Learning" (2017)
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please:
 1. Fork the repository
@@ -315,14 +254,14 @@ Contributions are welcome! Please:
 3. Add tests for new functionality
 4. Submit a pull request
 
-## 📄 License
+## License
 
 This project is for educational and research purposes. Please ensure compliance with:
 - Dataset licenses (PneumoniaMNIST/NIH)
 - Medical data regulations (HIPAA, GDPR)
 - Institutional review board requirements
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **MedMNIST Team**: For providing the standardized medical imaging benchmark
 - **NIH**: For the original chest X-ray dataset
@@ -331,4 +270,4 @@ This project is for educational and research purposes. Please ensure compliance 
 
 ---
 
-**Built with ❤️ for advancing AI in healthcare education and research.**
+**Built with love for advancing AI in healthcare education and research.**
