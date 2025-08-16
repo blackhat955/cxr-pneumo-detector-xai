@@ -125,21 +125,9 @@ These visualizations help clinicians understand which regions of the chest X-ray
 - **Confidence**: Calibrated probability scores
 - **Disclaimer**: Clear medical usage warnings
 
-### Streamlit Dashboard
-- **Sidebar**: Model information and technical details
-- **Main Panel**: Image upload and results display
-- **Advanced**: Threshold analysis and metrics
-- **Educational**: Technology explanations
-
 ## Medical Disclaimer
 
 **IMPORTANT**: This is a demonstration tool for educational and research purposes only.
-
-- **NOT for clinical diagnosis** or treatment decisions
-- **NOT a replacement** for professional medical evaluation
-- **NOT validated** for clinical use
-- **Educational tool** for understanding AI in healthcare
-- **Research prototype** for algorithm development
 
 **Always consult qualified healthcare professionals for medical advice.**
 
@@ -188,50 +176,7 @@ Output (Pneumonia Probability)
 - **Sensitivity**: ~90-95%
 - **Specificity**: ~80-85%
 
-*Note: Results may vary based on random initialization and data splits.*
 
-## Customization
-
-### Adding New Models
-1. Implement model in `src/model.py`
-2. Add to `create_model()` factory function
-3. Update training arguments in `src/train.py`
-
-### Custom Datasets
-1. Modify `src/prepare_data.py` for your data format
-2. Ensure proper preprocessing pipeline
-3. Update class names and number of classes
-
-### Deployment Options
-- **Docker**: Containerize the application
-- **Cloud**: Deploy on AWS/GCP/Azure
-- **Edge**: Optimize for mobile/embedded devices
-- **API**: Create REST API endpoints
-
-## Troubleshooting
-
-### Common Issues
-
-**GPU Memory Error**
-```bash
-# Reduce batch size
-python train.py --batch_size 16
-
-# Enable mixed precision
-export TF_ENABLE_AUTO_MIXED_PRECISION=1
-```
-
-**Dataset Download Issues**
-```bash
-# Manual download and extraction
-# Check internet connection and disk space
-```
-
-**Model Loading Errors**
-```bash
-# Ensure model path is correct
-# Check TensorFlow version compatibility
-```
 
 ### Performance Optimization
 - **GPU**: Use CUDA-enabled TensorFlow
