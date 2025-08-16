@@ -239,7 +239,7 @@ Please try:
         
         return interface
 
-def create_gradio_app(model_path: str, share: bool = False, server_port: int = 7860):
+def create_gradio_app(model_path: str, share: bool = False, server_port: int = 7860, server_name: str = "127.0.0.1"):
     """
     Create and launch PyTorch Gradio app
     """
@@ -247,15 +247,18 @@ def create_gradio_app(model_path: str, share: bool = False, server_port: int = 7
         app = ChestXrayPyTorchApp(model_path)
         interface = app.create_gradio_interface()
         
-        print(f"Launching PyTorch Gradio app on port {server_port}...")
+        print(f"Launching PyTorch Gradio app on {server_name}:{server_port}...")
         print(f"Using model: {model_path}")
         
         interface.launch(
             share=share,
+            server_name=server_name,
             server_port=server_port,
-            server_name="0.0.0.0",
-            show_error=True
+            show_error=True,
+            quiet=False
         )
+        
+        return interface
         
     except Exception as e:
         print(f"Error launching app: {e}")
@@ -268,10 +271,12 @@ def main():
     parser = argparse.ArgumentParser(description='PyTorch Chest X-ray Pneumonia Detection App')
     parser.add_argument('--model_path', type=str, required=True,
                        help='Path to the trained PyTorch model (.pth file)')
-    parser.add_argument('--port', type=int, default=7860,
+    parser.add_argument('--port', type=int, default=None,
                        help='Port number for the Gradio app (default: 7860)')
     parser.add_argument('--share', action='store_true',
                        help='Create a public link for the app')
+    parser.add_argument('--host', type=str, default=None,
+                       help='Host to run the app on')
     
     args = parser.parse_args()
     
@@ -280,11 +285,20 @@ def main():
         print(f"Model file not found: {args.model_path}")
         return
     
+    # Handle environment variables for deployment
+    port = args.port or int(os.environ.get('PORT', 7860))
+    host = args.host or os.environ.get('HOST', '127.0.0.1')
+    
+    # For deployment platforms, use 0.0.0.0
+    if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('RENDER') or os.environ.get('SPACE_ID'):
+        host = '0.0.0.0'
+    
     # Launch the app
     create_gradio_app(
         model_path=args.model_path,
         share=args.share,
-        server_port=args.port
+        server_port=port,
+        server_name=host
     )
 
 if __name__ == "__main__":

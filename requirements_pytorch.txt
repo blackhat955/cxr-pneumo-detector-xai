@@ -37,6 +37,9 @@ opencv-python>=4.8.0
 # Model serialization
 joblib>=1.3.0
 
+# Hugging Face Hub
+huggingface_hub>=0.16.0
+
 # Progress bars and logging
 rich>=13.0.0
 

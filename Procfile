@@ -1,0 +1,1 @@
+web: python src/app_pytorch.py --model_path experiments/quick_test_model.pth --port $PORT --host 0.0.0.0
