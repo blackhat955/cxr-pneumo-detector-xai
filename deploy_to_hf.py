@@ -14,7 +14,7 @@ def create_hf_space():
     """
     # Configuration
     space_name = "chest-xray-pneumonia-detector"
-    username = os.getenv('HF_USERNAME', 'your-username')  # Set this in GitHub secrets
+    username = os.getenv('HF_USERNAME', 'devil66')  # Set this in GitHub secrets
     token = os.getenv('HF_TOKEN')
     
     if not token:
@@ -42,11 +42,11 @@ def create_hf_space():
     
     # Prepare files for upload
     files_to_upload = [
-        "src/app_pytorch.py",
-        "src/model_pytorch.py", 
-        "src/gradcam_pytorch.py",
-        "experiments/quick_test_model.pth",
-        "requirements_pytorch.txt"
+        ("src/app_pytorch.py", "app_pytorch.py"),
+        ("src/model_pytorch.py", "model_pytorch.py"), 
+        ("src/gradcam_pytorch.py", "gradcam_pytorch.py"),
+        ("experiments/quick_test_model.pth", "quick_test_model.pth"),
+        ("requirements_pytorch.txt", "requirements.txt")
     ]
     
     # Create app.py for Hugging Face Spaces
@@ -57,9 +57,8 @@ Hugging Face Spaces deployment for Chest X-ray Pneumonia Detection
 
 import sys
 import os
-sys.path.append('.')
 
-from src.app_pytorch import create_gradio_app
+from app_pytorch import create_gradio_app
 
 if __name__ == "__main__":
     # Use the model from the uploaded file
@@ -83,19 +82,18 @@ if __name__ == "__main__":
         )
         
         # Upload source files
-        for file_path in files_to_upload:
-            if os.path.exists(file_path):
-                filename = os.path.basename(file_path)
+        for source_path, target_name in files_to_upload:
+            if os.path.exists(source_path):
                 api.upload_file(
-                    path_or_fileobj=file_path,
-                    path_in_repo=filename,
+                    path_or_fileobj=source_path,
+                    path_in_repo=target_name,
                     repo_id=repo_id,
                     repo_type="space",
                     token=token
                 )
-                print(f"Uploaded: {file_path}")
+                print(f"Uploaded: {source_path} -> {target_name}")
             else:
-                print(f"File not found: {file_path}")
+                print(f"File not found: {source_path}")
         
         # Create README for the space
         readme_content = '''---
