@@ -114,6 +114,9 @@ The following images demonstrate the model's attention patterns when making pred
 ![Interactive Demo Screenshot](experiments/quick_test_gradcam/Screenshot%202025-08-16%20at%2001.35.49.png)
 *Interactive Gradio Application - Real-time pneumonia detection with Grad-CAM explanations*
 
+![Application Interface Screenshot](experiments/quick_test_gradcam/Screenshot%202025-08-16%20at%2002.43.48.png)
+*Application Interface - Medical imaging analysis with comprehensive visualization panels*
+
 ![Enhanced Interface Screenshot](experiments/quick_test_gradcam/enhanced_interface_screenshot.png)
 *Enhanced Medical Imaging Interface - Comprehensive 20-panel AI explainability dashboard with statistical analysis, anatomical region mapping, uncertainty visualization, and detailed diagnostic insights*
 
