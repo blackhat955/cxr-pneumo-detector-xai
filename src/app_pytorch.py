@@ -421,7 +421,7 @@ Please try:
         interface = gr.Interface(
             fn=predict_interface,
             inputs=[
-                gr.Image(type="pil", label="Upload Chest X-ray Image")
+                gr.Image(type="pil", label="Upload Chest X-ray Image", sources=["upload"])
             ],
             outputs=[
                 gr.Markdown(label="Prediction Results"),
